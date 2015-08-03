@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>NFCHAT</title>
+	<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+	<h1>
+		NFCHAT
+	</h1>
+	<script>
+socket = io.connect()
+socket.emit("start chat", 123)
+socket.on("msg", function(data) {
+console.log(data)
+
+})
+socket.emit("msg", "asdasdasdasd")
+	</script>
+</body>
+</html>
