@@ -34,13 +34,21 @@
     console.log('a user connected');
     user = new User(socket);
     socket.on("start chat", function() {
-      var opponent;
+      var id, ids, opponent;
       opponent = searchOpponent();
+      ids = [];
+      for (id in FREEUSERS) {
+        ids.push(id);
+      }
+      console.log(ids);
       if (opponent) {
         return createRoom(user, opponent);
       } else {
         return FREEUSERS[socket.id] = user;
       }
+    });
+    socket.on('disconnect', function() {
+      return delete FREEUSERS[socket.id];
     });
   });
 
@@ -61,14 +69,13 @@
     delete FREEUSERS[user1.socket.id];
     delete FREEUSERS[user2.socket.id];
     user1.onmessage(function(msg) {
-      console.log(msg);
       return user2.sendmessage(msg);
     });
-    return user2.onmessage(function(msg) {
-      console.log(msg);
-      console.log(user1);
+    user2.onmessage(function(msg) {
       return user1.sendmessage(msg);
     });
+    user1.sendmessage("Вы подключились к собеседнику");
+    return user2.sendmessage("Вы подключились к собеседнику");
   };
 
   http.listen(3000, function() {

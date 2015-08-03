@@ -9,14 +9,31 @@
 	<h1>
 		NFCHAT
 	</h1>
+	<pre>
+		
+	</pre>
+	<input type="text">
+	<button>Send!</button>
 	<script>
 socket = io.connect()
 socket.emit("start chat", 123)
+document.querySelector("input").addEventListener("keyup", function(e){
+	if (e.keyCode == 13) {
+		socket.emit("msg", this.value)
+	document.querySelector("input").value = ""
+		
+	}
+})
+document.querySelector("button").addEventListener("click", function(e){
+
+	socket.emit("msg", document.querySelector("input").value)
+	document.querySelector("input").value = ""
+})
 socket.on("msg", function(data) {
 console.log(data)
+document.querySelector("pre").innerHTML += data + "\n"
 
 })
-socket.emit("msg", "asdasdasdasd")
 	</script>
 </body>
 </html>

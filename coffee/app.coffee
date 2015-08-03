@@ -22,10 +22,16 @@ io.on 'connection', (socket) ->
   user = new User socket
   socket.on "start chat", () ->
   	opponent = searchOpponent()
+  	ids = []
+  	for id of FREEUSERS
+  		ids.push id
+  	console.log ids
   	if opponent
   		createRoom user, opponent
   	else
   		FREEUSERS[socket.id] = user
+  socket.on 'disconnect', () ->
+  	delete FREEUSERS[socket.id]
   return
 searchOpponent = () ->
 	ids = []
@@ -38,13 +44,11 @@ createRoom = (user1, user2) ->
 	delete FREEUSERS[user1.socket.id]
 	delete FREEUSERS[user2.socket.id]
 	user1.onmessage (msg) ->
-		console.log msg
 		user2.sendmessage msg
 	user2.onmessage (msg) ->
-		console.log msg
-		console.log user1
 		user1.sendmessage msg
-
+	user1.sendmessage "Вы подключились к собеседнику"
+	user2.sendmessage "Вы подключились к собеседнику"
 http.listen 3000, ->
   console.log 'listening on *:3000'
   return
