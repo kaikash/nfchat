@@ -4,36 +4,61 @@
 	<meta charset="UTF-8">
 	<title>NFCHAT</title>
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+	<link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.2/material.deep_orange-red.min.css" />
+	<script src="https://storage.googleapis.com/code.getmdl.io/1.0.2/material.min.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 <body>
-	<h1>
-		NFCHAT
-	</h1>
-	<pre>
-		
-	</pre>
-	<input type="text">
-	<button>Send!</button>
-	<script>
-socket = io.connect()
-socket.emit("start chat", 123)
-document.querySelector("input").addEventListener("keyup", function(e){
-	if (e.keyCode == 13) {
-		socket.emit("msg", this.value)
-	document.querySelector("input").value = ""
-		
-	}
-})
-document.querySelector("button").addEventListener("click", function(e){
+	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+	  <header class="mdl-layout__header">
+	    <div class="mdl-layout__header-row">
+	      <!-- Title -->
+	      <span class="mdl-layout-title">NFCHAT</span>
+	      <!-- Add spacer, to align navigation to the right -->
+	      <div class="mdl-layout-spacer"></div>
+	      <!-- Navigation. We hide it in small screens. -->
+	      <nav class="mdl-navigation mdl-layout--large-screen-only">
+	        <a class="mdl-navigation__link" href="">Link</a>
+	        <a class="mdl-navigation__link" href="">Link</a>
+	        <a class="mdl-navigation__link" href="">Link</a>
+	        <a class="mdl-navigation__link" href="">Link</a>
+	      </nav>
+	    </div>
+	  </header>
+	  <div class="mdl-layout__drawer">
+	    <span class="mdl-layout-title">Title</span>
+	    <nav class="mdl-navigation">
+	      <a class="mdl-navigation__link" href="">Link</a>
+	      <a class="mdl-navigation__link" href="">Link</a>
+	      <a class="mdl-navigation__link" href="">Link</a>
+	      <a class="mdl-navigation__link" href="">Link</a>
+	    </nav>
+	  </div>
+	  <main class="mdl-layout__content">
+	    <div class="page-content">
+	    	<div id="sysmsg"></div>
+	    	<div id="msgbox"></div>
+	    	<form action="#">
+	    	  <div class="mdl-textfield mdl-js-textfield textfield-demo">
+	    	    <textarea class="mdl-textfield__input" type="text" rows= "3" id="sample5" ></textarea>
+	    	    <label class="mdl-textfield__label" for="sample5">Text lines...</label>
+	    	  </div>
+	    	  <button id="send" class="mdl-button mdl-js-button mdl-js-ripple-effect">Send</button>
+	    	  <button id="startChat" class="mdl-button mdl-js-button mdl-js-ripple-effect">Start chat</button>
+	    	  <button id="stopChat"  class="mdl-button mdl-js-button mdl-js-ripple-effect" style="display: none">Stop chat</button>
+	    	</form>
 
-	socket.emit("msg", document.querySelector("input").value)
-	document.querySelector("input").value = ""
-})
-socket.on("msg", function(data) {
-console.log(data)
-document.querySelector("pre").innerHTML += data + "\n"
+	    	
 
-})
-	</script>
+	    </div>
+	  </main>
+	</div>
+
+		<script src="js/Message.js"></script>
+	<script src="js/MessageBox.js"></script>
+	<script src="js/main.js"></script>
 </body>
 </html>
