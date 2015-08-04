@@ -10,6 +10,7 @@ Math.random = (min, max, integer) ->
     Math.rand()
 
 User = require('./User.js').User
+Room = require('./Room.js').Room
 
 express = require('express')
 app = express()
@@ -43,6 +44,8 @@ searchOpponent = () ->
 createRoom = (user1, user2) ->
 	delete FREEUSERS[user1.socket.id]
 	delete FREEUSERS[user2.socket.id]
+  room = new Room user1, user2
+  room.sendmessage Room
 	user1.onmessage (msg) ->
 		user2.sendmessage msg
 	user2.onmessage (msg) ->
