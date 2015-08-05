@@ -10,12 +10,14 @@ Math.random = (min, max, integer) ->
     Math.rand()
 
 User = require('./User.js').User
-Room = require('./Room.js').Room
 
 express = require('express')
 app = express()
 http = require('http').Server(app)
 io = require('socket.io')(http)
+
+
+
 app.use express.static(__dirname + "/public")
 FREEUSERS = []
 users = 0
@@ -23,121 +25,69 @@ io.on 'connection', (socket) ->
   console.log 'a user connected'
   users++
   user = new User socket
-  setInterval () ->
-  	socket.emit "smsg", 
-  		code: 5
-  		text: "Users: " + users
-  , 1000
+
   socket.on "start chat", () ->
-  	opponent = searchOpponent()
-  	ids = []
-  	for id of FREEUSERS
-  		ids.push id
-  	console.log ids
-  	if opponent
-  		createRoom user, opponent
-  	else
-  		FREEUSERS[socket.id] = user
+    unless user.busy
+      user.busy = true
+      opponent = searchOpponent()
+      ids = []
+      for id of FREEUSERS
+        ids.push id
+
+      if opponent
+        createRoom user, opponent
+      else
+        FREEUSERS[socket.id] = user
+  
   socket.on 'disconnect', () ->
-  	users--
-  	delete FREEUSERS[socket.id]
+    users--
+    delete FREEUSERS[socket.id]
   return
 searchOpponent = () ->
-	ids = []
-	for id of FREEUSERS
-		ids.push id
-	if ids.length == 0 then return null
-	index = Math.random(0, ids.length - 1, true)
-	FREEUSERS[ids[index]]
+  ids = []
+  for id of FREEUSERS
+    ids.push id
+  if ids.length == 0 then return null
+  index = Math.random(0, ids.length - 1, true)
+  FREEUSERS[ids[index]]
 # 0 - Соединение разорвано
 # 1 - Соединение установлено
 # 2 - Сообщение отправлено
 # 3 - Собеседник набирает сообщение
 createRoom = (user1, user2) ->
-	delete FREEUSERS[user1.socket.id]
-	delete FREEUSERS[user2.socket.id]
-<<<<<<< HEAD
-  room = new Room user1, user2
-  room.sendmessage Room
-=======
-	# Messages section
->>>>>>> 4d0aa00f9877a21c6a3fcd40bc2313bf567e5d27
-	user1.onmessage (msg) ->
-		user1.sendsysmessage 
-			code: 2
-			text: "Сообщение отправлено"
-			msg: msg
-		user2.sendmessage msg
-	user2.onmessage (msg) ->
-		user2.sendsysmessage 
-			code: 2
-			text: "Сообщение отправлено"
-			msg: msg
-		user1.sendmessage msg
+  delete FREEUSERS[user1.socket.id]
+  delete FREEUSERS[user2.socket.id]
 
+  do user1.connection_established
+  do user2.connection_established
 
-	# Disconnect section
-	user1.socket.on 'disconnect', () ->
-		user2.sendsysmessage 
-			code: 0
-			text: "Соединение разорвано"
-	user2.socket.on 'disconnect', () ->
-		user1.sendsysmessage 
-			code: 0
-			text: "Соединение разорвано"
+  # Messages section
+  user1.onmessage (msg) ->
+    user1.message_sent msg
+    user2.sendmessage msg
+  user2.onmessage (msg) ->
+    user2.message_sent msg
+    user1.sendmessage msg
 
+  # Disconnect section
+  user1.ondisconnect () ->
+    do user2.disconnect
+  user2.ondisconnect () ->
+    do user1.disconnect
 
-	user1.sendsysmessage 
-		code: 1
-		text: "Соединение установлено"
-	user2.sendsysmessage 
-		code: 1
-		text: "Соединение установлено"
+  user1.onsysmessage (smsg) ->
+    user2.sendsysmessage smsg
+    if smsg.code == 0
+      do user1.removeAllListeners
+      do user2.removeAllListeners  
+  user2.onsysmessage (smsg) ->
+    user1.sendsysmessage smsg
+    if smsg.code == 0
+      do user2.removeAllListeners
+      do user1.removeAllListeners 
 
-	user1.onsysmessage (smsg) ->
-		 user2.sendsysmessage smsg
-		 if smsg.code == 0
-		 		user1.socket.removeAllListeners "smsg"
-		 		user2.socket.removeAllListeners "smsg"
-		 		user1.socket.removeAllListeners "msg"
-		 		user2.socket.removeAllListeners "msg"
-		 		user1.socket.removeAllListeners "stop chat"
-		 		user2.socket.removeAllListeners "stop chat"
-	user2.onsysmessage (smsg) ->
-		 user1.sendsysmessage smsg
-		 if smsg.code == 0
-		 		user1.socket.removeAllListeners "smsg"
-		 		user2.socket.removeAllListeners "smsg"
-		 		user1.socket.removeAllListeners "msg"
-		 		user2.socket.removeAllListeners "msg"
-		 		user1.socket.removeAllListeners "stop chat"
-		 		user2.socket.removeAllListeners "stop chat"
-	user1.socket.on "stop chat", () ->
-		user1.sendsysmessage 
-			code: 0
-			text: "Соединение разорвано"
-		user2.sendsysmessage 
-			code: 0
-			text: "Соединение разорвано"
-		user1.socket.removeAllListeners "smsg"
-		user2.socket.removeAllListeners "smsg"
-		user1.socket.removeAllListeners "msg"
-		user2.socket.removeAllListeners "msg"
-		user1.socket.removeAllListeners "stop chat"
-		user2.socket.removeAllListeners "stop chat"
-	user2.socket.on "stop chat", () ->
-		user1.sendsysmessage 
-			code: 0
-			text: "Соединение разорвано"
-		user2.sendsysmessage 
-			code: 0
-			text: "Соединение разорвано"
-		user1.socket.removeAllListeners "smsg"
-		user2.socket.removeAllListeners "smsg"
-		user1.socket.removeAllListeners "msg"
-		user2.socket.removeAllListeners "msg"
-		user1.socket.removeAllListeners "stop chat"
-		user2.socket.removeAllListeners "stop chat"
+  user1.onstopchat user2
+  user2.onstopchat user1
 
 http.listen 3000, ->
   console.log 'listening on *:3000'

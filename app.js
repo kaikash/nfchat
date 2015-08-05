@@ -36,24 +36,20 @@
     console.log('a user connected');
     users++;
     user = new User(socket);
-    setInterval(function() {
-      return socket.emit("smsg", {
-        code: 5,
-        text: "Users: " + users
-      });
-    }, 1000);
     socket.on("start chat", function() {
       var id, ids, opponent;
-      opponent = searchOpponent();
-      ids = [];
-      for (id in FREEUSERS) {
-        ids.push(id);
-      }
-      console.log(ids);
-      if (opponent) {
-        return createRoom(user, opponent);
-      } else {
-        return FREEUSERS[socket.id] = user;
+      if (!user.busy) {
+        user.busy = true;
+        opponent = searchOpponent();
+        ids = [];
+        for (id in FREEUSERS) {
+          ids.push(id);
+        }
+        if (opponent) {
+          return createRoom(user, opponent);
+        } else {
+          return FREEUSERS[socket.id] = user;
+        }
       }
     });
     socket.on('disconnect', function() {
@@ -78,96 +74,38 @@
   createRoom = function(user1, user2) {
     delete FREEUSERS[user1.socket.id];
     delete FREEUSERS[user2.socket.id];
+    user1.connection_established();
+    user2.connection_established();
     user1.onmessage(function(msg) {
-      user1.sendsysmessage({
-        code: 2,
-        text: "Сообщение отправлено",
-        msg: msg
-      });
+      user1.message_sent(msg);
       return user2.sendmessage(msg);
     });
     user2.onmessage(function(msg) {
-      user2.sendsysmessage({
-        code: 2,
-        text: "Сообщение отправлено",
-        msg: msg
-      });
+      user2.message_sent(msg);
       return user1.sendmessage(msg);
     });
-    user1.socket.on('disconnect', function() {
-      return user2.sendsysmessage({
-        code: 0,
-        text: "Соединение разорвано"
-      });
+    user1.ondisconnect(function() {
+      return user2.disconnect();
     });
-    user2.socket.on('disconnect', function() {
-      return user1.sendsysmessage({
-        code: 0,
-        text: "Соединение разорвано"
-      });
-    });
-    user1.sendsysmessage({
-      code: 1,
-      text: "Соединение установлено"
-    });
-    user2.sendsysmessage({
-      code: 1,
-      text: "Соединение установлено"
+    user2.ondisconnect(function() {
+      return user1.disconnect();
     });
     user1.onsysmessage(function(smsg) {
       user2.sendsysmessage(smsg);
       if (smsg.code === 0) {
-        user1.socket.removeAllListeners("smsg");
-        user2.socket.removeAllListeners("smsg");
-        user1.socket.removeAllListeners("msg");
-        user2.socket.removeAllListeners("msg");
-        user1.socket.removeAllListeners("stop chat");
-        return user2.socket.removeAllListeners("stop chat");
+        user1.removeAllListeners();
+        return user2.removeAllListeners();
       }
     });
     user2.onsysmessage(function(smsg) {
       user1.sendsysmessage(smsg);
       if (smsg.code === 0) {
-        user1.socket.removeAllListeners("smsg");
-        user2.socket.removeAllListeners("smsg");
-        user1.socket.removeAllListeners("msg");
-        user2.socket.removeAllListeners("msg");
-        user1.socket.removeAllListeners("stop chat");
-        return user2.socket.removeAllListeners("stop chat");
+        user2.removeAllListeners();
+        return user1.removeAllListeners();
       }
     });
-    user1.socket.on("stop chat", function() {
-      user1.sendsysmessage({
-        code: 0,
-        text: "Соединение разорвано"
-      });
-      user2.sendsysmessage({
-        code: 0,
-        text: "Соединение разорвано"
-      });
-      user1.socket.removeAllListeners("smsg");
-      user2.socket.removeAllListeners("smsg");
-      user1.socket.removeAllListeners("msg");
-      user2.socket.removeAllListeners("msg");
-      user1.socket.removeAllListeners("stop chat");
-      return user2.socket.removeAllListeners("stop chat");
-    });
-    return user2.socket.on("stop chat", function() {
-      user1.sendsysmessage({
-        code: 0,
-        text: "Соединение разорвано"
-      });
-      user2.sendsysmessage({
-        code: 0,
-        text: "Соединение разорвано"
-      });
-      user1.socket.removeAllListeners("smsg");
-      user2.socket.removeAllListeners("smsg");
-      user1.socket.removeAllListeners("msg");
-      user2.socket.removeAllListeners("msg");
-      user1.socket.removeAllListeners("stop chat");
-      return user2.socket.removeAllListeners("stop chat");
-    });
+    user1.onstopchat(user2);
+    return user2.onstopchat(user1);
   };
 
   http.listen(3000, function() {
