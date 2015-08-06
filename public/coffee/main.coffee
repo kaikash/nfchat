@@ -144,7 +144,7 @@ socket.on "smsg", (data) ->
 	else if data.code == 4
 		MSGBOX.readAll()
 	else if data.code == 5
-		$("#usersNum").text data.text.slice(data.text.lastIndexOf(" ")+1)
+		$("#usersNum").text data.content
 		$("#usersTooltip").text "В данный момент на сайте " + $("#usersNum").text() + ( if $("#usersNum").text()[$("#usersNum").text().length-1]/1 == 1 then " пользователь" else if $("#usersNum").text()[$("#usersNum").text().length-1]/1 > 1 and $("#usersNum").text()[$("#usersNum").text().length-1]/1 < 5 then " пользователя" else " пользователей")
 MSGBOX = new MessageBox document.querySelector("#msgbox")
 readAllMessages = () ->

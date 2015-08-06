@@ -1,5 +1,5 @@
 (function() {
-  var FREEUSERS, User, app, createRoom, express, http, io, searchOpponent, users;
+  var FREEUSERS, User, app, createRoom, express, http, io, searchOpponent, userCount, users;
 
   Math.rand = Math.random;
 
@@ -33,9 +33,10 @@
 
   io.on('connection', function(socket) {
     var user;
-    console.log('a user connected');
+    console.log('User connected; socket id: ' + socket.id);
     users++;
     user = new User(socket);
+    userCount();
     socket.on("start chat", function() {
       var id, ids, opponent;
       if (!user.busy) {
@@ -52,9 +53,10 @@
         }
       }
     });
-    socket.on('disconnect', function() {
+    return socket.on('disconnect', function() {
       users--;
-      return delete FREEUSERS[socket.id];
+      delete FREEUSERS[socket.id];
+      return userCount();
     });
   });
 
@@ -71,6 +73,13 @@
     return FREEUSERS[ids[index]];
   };
 
+  userCount = function() {
+    return io.emit('smsg', {
+      code: 5,
+      content: users
+    });
+  };
+
   createRoom = function(user1, user2) {
     delete FREEUSERS[user1.socket.id];
     delete FREEUSERS[user2.socket.id];
@@ -85,10 +94,10 @@
       return user1.sendmessage(msg);
     });
     user1.ondisconnect(function() {
-      return user2.disconnect();
+      return user2.disconnect(user1);
     });
     user2.ondisconnect(function() {
-      return user1.disconnect();
+      return user1.disconnect(user2);
     });
     user1.onsysmessage(function(smsg) {
       user2.sendsysmessage(smsg);

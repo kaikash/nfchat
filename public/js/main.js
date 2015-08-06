@@ -208,7 +208,7 @@
     } else if (data.code === 4) {
       return MSGBOX.readAll();
     } else if (data.code === 5) {
-      $("#usersNum").text(data.text.slice(data.text.lastIndexOf(" ") + 1));
+      $("#usersNum").text(data.content);
       return $("#usersTooltip").text("В данный момент на сайте " + $("#usersNum").text() + ($("#usersNum").text()[$("#usersNum").text().length - 1] / 1 === 1 ? " пользователь" : $("#usersNum").text()[$("#usersNum").text().length - 1] / 1 > 1 && $("#usersNum").text()[$("#usersNum").text().length - 1] / 1 < 5 ? " пользователя" : " пользователей"));
     }
   });

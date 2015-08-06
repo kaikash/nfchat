@@ -22,9 +22,11 @@ app.use express.static(__dirname + "/public")
 FREEUSERS = []
 users = 0
 io.on 'connection', (socket) ->
-  console.log 'a user connected'
+  console.log 'User connected; socket id: ' + socket.id
   users++
   user = new User socket
+
+  do userCount
 
   socket.on "start chat", () ->
     unless user.busy
@@ -42,7 +44,8 @@ io.on 'connection', (socket) ->
   socket.on 'disconnect', () ->
     users--
     delete FREEUSERS[socket.id]
-  return
+    do userCount
+
 searchOpponent = () ->
   ids = []
   for id of FREEUSERS
@@ -50,10 +53,20 @@ searchOpponent = () ->
   if ids.length == 0 then return null
   index = Math.random(0, ids.length - 1, true)
   FREEUSERS[ids[index]]
+
+userCount = () ->
+  io.emit 'smsg',
+    code: 5
+    content: users
+
 # 0 - Соединение разорвано
 # 1 - Соединение установлено
 # 2 - Сообщение отправлено
 # 3 - Собеседник набирает сообщение
+# 4 - Прочитаны, не прочитаны
+# 5 - Кол-во пользователей
+
+
 createRoom = (user1, user2) ->
   delete FREEUSERS[user1.socket.id]
   delete FREEUSERS[user2.socket.id]
@@ -71,9 +84,9 @@ createRoom = (user1, user2) ->
 
   # Disconnect section
   user1.ondisconnect () ->
-    do user2.disconnect
+    user2.disconnect user1
   user2.ondisconnect () ->
-    do user1.disconnect
+    user1.disconnect user2
 
   user1.onsysmessage (smsg) ->
     user2.sendsysmessage smsg

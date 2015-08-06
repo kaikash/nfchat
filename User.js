@@ -52,6 +52,7 @@
     };
 
     User.prototype.stopchat = function() {
+      console.log('stopchatat!');
       this.sendsysmessage({
         code: 0,
         text: "Соединение разорвано"
@@ -61,6 +62,7 @@
     };
 
     User.prototype.disconnect = function(opponent) {
+      this.stopchat();
       return opponent.stopchat();
     };
 

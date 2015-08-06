@@ -25,6 +25,7 @@ class User
       do opponent.stopchat
 
   stopchat: () =>
+    console.log 'stopchatat!'
     @sendsysmessage 
       code: 0
       text: "Соединение разорвано"
@@ -32,6 +33,7 @@ class User
     @busy = false
 
   disconnect: (opponent) =>
+    do @stopchat
     do opponent.stopchat
 
   connection_established: () =>
