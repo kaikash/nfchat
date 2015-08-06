@@ -1,0 +1,72 @@
+.page-content {
+  max-width: 900px;
+  padding: 20px;
+  margin: 0 auto; }
+
+.main-textfield {
+  width: 100%; }
+
+.buttons button {
+  float: right; }
+
+.global-loading {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  z-index: 99998;
+  transition: opacity 0.3s;
+  opacity: 1; }
+  .global-loading.close {
+    opacity: 0; }
+  .global-loading div {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    margin-left: -20px;
+    margin-top: -20px; }
+
+#sysmsg {
+  height: 20px; }
+
+#msgbox {
+  margin-top: 20px; }
+  #msgbox .message-box {
+    margin-bottom: 20px;
+    padding: 0 20px; }
+    #msgbox .message-box .message-content {
+      max-width: 60%;
+      padding: 10px;
+      font-size: 16px;
+      background: #f1f1f1;
+      position: relative; }
+      #msgbox .message-box .message-content:after {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 0;
+        height: 0;
+        right: -10px;
+        top: 0px;
+        border-style: solid; }
+    #msgbox .message-box.stranger .message-content {
+      background: rgba(255, 87, 34, 0.5);
+      float: left; }
+      #msgbox .message-box.stranger .message-content:after {
+        left: -10px;
+        border-width: 0 10px 10px 0;
+        border-color: transparent rgba(255, 87, 34, 0.5) transparent transparent; }
+    #msgbox .message-box.me .message-content {
+      float: right;
+      text-align: right; }
+      #msgbox .message-box.me .message-content:after {
+        border-color: #f1f1f1 transparent transparent transparent;
+        border-width: 10px 10px 0 0; }
+    #msgbox .message-box.new .message-content {
+      background: rgba(255, 87, 34, 0.1); }
+    #msgbox .message-box.new.me .message-content:after {
+      border-color: rgba(255, 87, 34, 0.1) transparent transparent transparent !important; }
+    #msgbox .message-box.new.stranger .message-content:after {
+      border-color: transparent rgba(255, 87, 34, 0.1) transparent transparent !important; }

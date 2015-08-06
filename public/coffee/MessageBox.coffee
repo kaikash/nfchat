@@ -7,10 +7,11 @@ class MessageBox
 		else
 			fromText = "Некто: "
 		content = message.text
+		content = content.replace(new RegExp("<", "g"), "&lt;")
+		content = content.replace(new RegExp(">", "g"), "&gt;")
 		readed = if !message.readed then "new" else ""
-		$(@elem).append '
-			<div class="message-box ' + message.from + ' ' + readed + '">
-				<div class="message-from-text">' + fromText + '</div>
+		$(@elem).prepend '
+			<div class="message-box clearfix ' + message.from + ' ' + readed + '">
 				<div class="message-content">' + content + '</div>
 			</div>
 		'

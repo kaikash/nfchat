@@ -9,9 +9,14 @@
 	<script src="https://storage.googleapis.com/code.getmdl.io/1.0.2/material.min.js"></script>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+	<link rel="stylesheet" href="css/app.css">
+	<script src="js/swipe.js"></script>
 </head>
 <body>
+<!-- 	<div class="global-loading">
+		<div class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
+	</div>
+ -->
 	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 	  <header class="mdl-layout__header">
 	    <div class="mdl-layout__header-row">
@@ -20,44 +25,83 @@
 	      <!-- Add spacer, to align navigation to the right -->
 	      <div class="mdl-layout-spacer"></div>
 	      <!-- Navigation. We hide it in small screens. -->
-	      <nav class="mdl-navigation mdl-layout--large-screen-only">
-	        <a class="mdl-navigation__link" href="">Link</a>
-	        <a class="mdl-navigation__link" href="">Link</a>
-	        <a class="mdl-navigation__link" href="">Link</a>
-	        <a class="mdl-navigation__link" href="">Link</a>
+	      <nav class="mdl-navigation">
+	        <a class="mdl-navigation__link" href="javascript:" id="disableSoundBtn">Откл. звук</a>
+	      	<a class="mdl-navigation__link" href="javascript:" id="enableSoundBtn" style="display: none">Вкл. звук</a>
+	      	<a class="mdl-navigation__link" href="javascript:" id="usersNum" style="/* display: none; */font-weight:  bold;display:  inline-block;/* background: rgba(0, 0, 0, .1); */font-size: 16px;">1</a>
+	      	<div class="mdl-tooltip" id="usersTooltip" for="usersNum">
+	      	В данный момент на сайте 1 пользователь
+	      	</div>
 	      </nav>
 	    </div>
 	  </header>
 	  <div class="mdl-layout__drawer">
-	    <span class="mdl-layout-title">Title</span>
+	  	<!-- <span class="mdl-layout-title">Действия</span>
+	  	<nav class="mdl-navigation">
+	  		<a class="mdl-navigation__link" href="javascript:">Начать чат</a>
+	  		<a class="mdl-navigation__link" href="javascript:">Остановить чат</a>
+	  		<a class="mdl-navigation__link" href="javascript:">Отправить сообщение</a>
+	  	</nav> -->
+	    <span class="mdl-layout-title">Настройки</span>
 	    <nav class="mdl-navigation">
-	      <a class="mdl-navigation__link" href="">Link</a>
-	      <a class="mdl-navigation__link" href="">Link</a>
-	      <a class="mdl-navigation__link" href="">Link</a>
-	      <a class="mdl-navigation__link" href="">Link</a>
+	      <a class="mdl-navigation__link" href="javascript:"> 
+					<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="soundSwitch">
+					  <span class="mdl-switch__label">Звуки</span>
+					  <input type="checkbox" id="soundSwitch" class="mdl-switch__input" checked />
+					</label>
+	      </a>
+				<a class="mdl-navigation__link" href="javascript:"> 
+					<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="vibrationSwitch">
+					  <span class="mdl-switch__label">Вибрация</span>
+					  <input type="checkbox" id="vibrationSwitch" class="mdl-switch__input" disabled />
+					</label>
+	      </a>
+	      <a class="mdl-navigation__link" href="javascript:"> 
+					<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="notificationsSwitch">
+					  <span class="mdl-switch__label">Уведомления</span>
+					  <input type="checkbox" id="notificationsSwitch" class="mdl-switch__input" disabled />
+					</label>
+	      </a>
+	      
 	    </nav>
+	    <span class="mdl-layout-title">Прочее</span>
+	  	<nav class="mdl-navigation">
+	  		<a class="mdl-navigation__link" href="javascript:">О нас</a>
+	  		<a class="mdl-navigation__link" href="javascript:">info@nfchat.ru</a>
+	  		<a class="mdl-navigation__link" href="javascript:">Разработчикам</a>
+	  	</nav>
+
 	  </div>
 	  <main class="mdl-layout__content">
 	    <div class="page-content">
 	    	<div id="sysmsg"></div>
-	    	<div id="msgbox"></div>
-	    	<form action="#">
-	    	  <div class="mdl-textfield mdl-js-textfield textfield-demo">
-	    	    <textarea class="mdl-textfield__input" type="text" rows= "3" id="sample5" ></textarea>
-	    	    <label class="mdl-textfield__label" for="sample5">Text lines...</label>
-	    	  </div>
-	    	  <button id="send" class="mdl-button mdl-js-button mdl-js-ripple-effect">Send</button>
-	    	  <button id="startChat" class="mdl-button mdl-js-button mdl-js-ripple-effect">Start chat</button>
-	    	  <button id="stopChat"  class="mdl-button mdl-js-button mdl-js-ripple-effect" style="display: none">Stop chat</button>
-	    	</form>
+    	  <div class="main-textfield mdl-textfield mdl-js-textfield textfield-demo">
+    	    <textarea class="mdl-textfield__input" type="text" rows= "2" id="sample5" ></textarea>
+    	    <label class="mdl-textfield__label" for="sample5">Введите сообщение</label>
+    	  </div>
+    	  <div class="buttons clearfix">
+    	  	<button id="send" class="mdl-button mdl-js-button mdl-js-ripple-effect" style="" disabled>Отправить</button>
+    	  	<button id="startChat" class="mdl-button mdl-js-button mdl-js-ripple-effect">Начать чат</button>
+    	  	<button id="stopChat"  class="mdl-button mdl-js-button mdl-js-ripple-effect" style="display: none">Отключиться</button>
+    	  </div>
+	    	 <div id="msgbox">
+	    	 <!-- 	<div class="message-box me clearfix">
+	    	 		<div class="message-content">Привет</div>
+	    	 	</div>
+	    	 	<div class="message-box stranger clearfix">
+	    	 		<div class="message-content">Привет</div>
+	    	 	</div>
+	    	 	<div class="message-box me new clearfix">
+	    	 		<div class="message-content">Как дела</div>
+	    	 	</div> -->
+	    	 </div>
 
 	    	
 
 	    </div>
 	  </main>
 	</div>
-
-		<script src="js/Message.js"></script>
+	<script src="js/Message.js"></script>
 	<script src="js/MessageBox.js"></script>
 	<script src="js/main.js"></script>
 </body>

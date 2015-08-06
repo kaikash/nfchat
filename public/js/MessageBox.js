@@ -20,8 +20,10 @@
         fromText = "Некто: ";
       }
       content = message.text;
+      content = content.replace(new RegExp("<", "g"), "&lt;");
+      content = content.replace(new RegExp(">", "g"), "&gt;");
       readed = !message.readed ? "new" : "";
-      return $(this.elem).append('<div class="message-box ' + message.from + ' ' + readed + '"> <div class="message-from-text">' + fromText + '</div> <div class="message-content">' + content + '</div> </div>');
+      return $(this.elem).prepend('<div class="message-box clearfix ' + message.from + ' ' + readed + '"> <div class="message-content">' + content + '</div> </div>');
     };
 
     MessageBox.prototype.readAll = function() {
